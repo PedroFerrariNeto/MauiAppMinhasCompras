@@ -42,11 +42,14 @@ namespace MauiAppMinhasCompras.Helpers
 
         /*O método GetAll é utilizado para consulta a tabela Produto no banco de dados e retorna todos os registros na
          forma de uma lista de objetos Produto. A operação é assíncrona, permitindo que o método seja executado sem
-        bloquear a thread principal. Semelhante ao slect * from (tabela)*/
+        bloquear a thread principal. Semelhante ao select * from (tabela)*/
         public Task<List<Produto>> GetAll()
         {
             return _conn.Table<Produto>().ToListAsync();
         }
+
+        /*O método Search implementa uma funcionalidade de busca na tabela Produto do banco de dados SQLite,
+         permitindo filtrar registros de acordo com uma string fornecida.*/
         public Task<List<Produto>> Search(string q)
         {
             string sql = "SELECT * Produto WHERE descricao LIKE '%" + q + "%'";
