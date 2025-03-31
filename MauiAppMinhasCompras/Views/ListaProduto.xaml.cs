@@ -72,7 +72,14 @@ public partial class ListaProduto : ContentPage
         {
             double soma = lista.Sum(i => i.Total);
 
-            string msg = $"O Total é {soma:C}";
+            var totaisPorCategoria = lista
+            .GroupBy(i => i.Categoria)
+            .ToDictionary(g => g.Key, g => g.Sum(i => i.Total));
+
+            
+            string msg = $"O Total Geral é {soma:C}\n\n" +
+                         "Total por Categoria:\n" +
+                         string.Join("\n", totaisPorCategoria.Select(kv => $"{kv.Key}: {kv.Value:C}"));       
 
             DisplayAlert("Total dos Produtos", msg, "OK");
         }
@@ -141,5 +148,30 @@ public partial class ListaProduto : ContentPage
         {
             lst_produtos.IsRefreshing = false;
         }
+    }
+
+    private async void txt_searchCat_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            string q = e.NewTextValue;
+
+            lst_produtos.IsRefreshing = true;
+
+            lista.Clear();
+
+            List<Produto> tmp = await App.Db.SearchCat(q);
+
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "OK");
+        }
+        finally
+        {
+            lst_produtos.IsRefreshing = false;
+        }
+
     }
 }
